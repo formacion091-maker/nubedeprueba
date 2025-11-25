@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <title>J A REPARACIONES - Gestión de Citas</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #e6f0ff; /* Fondo inicial azul claro */
+      transition: background-color 0.5s;
+    }
     header { text-align: center; margin-bottom: 20px; }
     header img { width: 120px; margin-bottom: 10px; }
     h1 { color: #2c3e50; margin: 0; }
@@ -61,6 +66,12 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+    /* Selector de color */
+    .color-selector {
+      text-align: center;
+      margin: 20px;
+    }
   </style>
 </head>
 <body>
@@ -70,6 +81,12 @@
     <h1>J A REPARACIONES</h1>
     <h2>Gestión de Citas para Mantenimiento Locativo</h2>
   </header>
+
+  <!-- Selector de color de fondo -->
+  <div class="color-selector">
+    <label for="colorFondo">🎨 Cambiar color de fondo: </label>
+    <input type="color" id="colorFondo" value="#e6f0ff" onchange="cambiarFondo(this.value)">
+  </div>
 
   <!-- Formulario -->
   <div>
@@ -146,6 +163,16 @@
         return;
       }
 
+      // Validación: no permitir citas del mismo servicio en mismo horario
+      const conflicto = citas.some(c =>
+        c.fecha === fecha && c.hora === hora && c.servicio === servicio
+      );
+
+      if (conflicto) {
+        alert("Ya hay una cita de ese tipo en ese horario. Elige otro.");
+        return;
+      }
+
       const cita = {
         id: contador++,
         cliente: cliente,
@@ -203,6 +230,11 @@
     function cerrarLightbox() {
       document.getElementById("lightbox").style.display = "none";
     }
+
+    // Cambiar color de fondo dinámicamente
+    function cambiarFondo(color) {
+      document.body.style.backgroundColor = color;
+    }
   </script>
 </body>
-</html>
+</html
