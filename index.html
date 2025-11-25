@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>J A REPARACIONES - Gestión de Citas</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    header { text-align: center; margin-bottom: 20px; }
+    header img { width: 120px; margin-bottom: 10px; }
+    h1 { color: #2c3e50; margin: 0; }
+    h2 { color: #2c3e50; margin-top: 5px; }
+
+    input, select, button { margin: 5px; padding: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f4f4f4; }
+    .btn { cursor: pointer; }
+
+    .galeria { margin-top: 40px; }
+    .imagenes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .imagenes div {
+      width: 250px;
+      text-align: center;
+    }
+    .imagenes img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .imagenes img:hover { transform: scale(1.05); }
+    .imagenes p { margin-top: 5px; font-weight: bold; }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      padding-top: 60px;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.8);
+    }
+    .lightbox img {
+      margin: auto;
+      display: block;
+      max-width: 80%;
+      max-height: 80%;
+      border-radius: 8px;
+    }
+    .close {
+      position: absolute;
+      top: 20px; right: 35px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Encabezado con logo y nombre -->
+  <header>
+    <img src="https://copilot.microsoft.com/th/id/BCO.6775ccae-6aac-4c93-90b0-40e6ddc7cae3.png" alt="Logo J A REPARACIONES">
+    <h1>J A REPARACIONES</h1>
+    <h2>Gestión de Citas para Mantenimiento Locativo</h2>
+  </header>
+
+  <!-- Formulario -->
+  <div>
+    <input type="text" id="cliente" placeholder="Nombre del cliente">
+    <input type="text" id="direccion" placeholder="Dirección del servicio">
+    <select id="servicio">
+      <option value="Pintura">Pintura general</option>
+      <option value="Plomería">Plomería</option>
+      <option value="Electricidad">Electricidad</option>
+      <option value="Otros">Otros arreglos</option>
+    </select>
+    <input type="date" id="fecha">
+    <input type="time" id="hora">
+    <button onclick="registrarCita()">Solicitar Cita</button>
+  </div>
+
+  <!-- Tabla de citas -->
+  <table id="tablaCitas">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Dirección</th>
+        <th>Servicio</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Galería de trabajos anteriores -->
+  <div class="galeria">
+    <h2>📸 Trabajos Anteriores</h2>
+    <div class="imagenes">
+      <div>
+        <img src="https://via.placeholder.com/250x150?text=Antes+Pintura" onclick="abrirLightbox(this.src)">
+        <img src="https://via.placeholder.com/250x150?text=Después+Pintura" onclick="abrirLightbox(this.src)">
+        <p>Pintura general</p>
+      </div>
+      <div>
+        <img src="https://via.placeholder.com/250x150?text=Antes+Plomería" onclick="abrirLightbox(this.src)">
+        <img src="https://via.placeholder.com/250x150?text=Después+Plomería" onclick="abrirLightbox(this.src)">
+        <p>Plomería</p>
+      </div>
+      <div>
+        <img src="https://via.placeholder.com/250x150?text=Antes+Electricidad" onclick="abrirLightbox(this.src)">
+        <img src="https://via.placeholder.com/250x150?text=Después+Electricidad" onclick="abrirLightbox(this.src)">
+        <p>Electricidad</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <span class="close" onclick="cerrarLightbox()">&times;</span>
+    <img id="lightboxImg" src="">
+  </div>
+
+  <script>
+    let citas = [];
+    let contador = 1;
+
+    function registrarCita() {
+      const cliente = document.getElementById("cliente").value;
+      const direccion = document.getElementById("direccion").value;
+      const servicio = document.getElementById("servicio").value;
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+
+      if (cliente === "" || direccion === "" || fecha === "" || hora === "") {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      const cita = {
+        id: contador++,
+        cliente: cliente,
+        direccion: direccion,
+        servicio: servicio,
+        fecha: fecha,
+        hora: hora
+      };
+
+      citas.push(cita);
+      mostrarCitas();
+      limpiarFormulario();
+    }
+
+    function mostrarCitas() {
+      const tbody = document.querySelector("#tablaCitas tbody");
+      tbody.innerHTML = "";
+
+      citas.forEach(cita => {
+        const fila = `
+          <tr>
+            <td>${cita.id}</td>
+            <td>${cita.cliente}</td>
+            <td>${cita.direccion}</td>
+            <td>${cita.servicio}</td>
+            <td>${cita.fecha}</td>
+            <td>${cita.hora}</td>
+            <td>
+              <button class="btn" onclick="eliminarCita(${cita.id})">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += fila;
+      });
+    }
+
+    function eliminarCita(id) {
+      citas = citas.filter(c => c.id !== id);
+      mostrarCitas();
+    }
+
+    function limpiarFormulario() {
+      document.getElementById("cliente").value = "";
+      document.getElementById("direccion").value = "";
+      document.getElementById("servicio").value = "Pintura";
+      document.getElementById("fecha").value = "";
+      document.getElementById("hora").value = "";
+    }
+
+    function abrirLightbox(src) {
+      document.getElementById("lightbox").style.display = "block";
+      document.getElementById("lightboxImg").src = src;
+    }
+
+    function cerrarLightbox() {
+      document.getElementById("lightbox").style.display = "none";
+    }
+  </script>
+</body>
+</html>
